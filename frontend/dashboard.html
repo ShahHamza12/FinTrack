@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · Fintrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,560&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle">Menu</button>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="dashboard.html"><span class="brand-mark">F</span> Fintrack</a>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="transactions.html">Transactions</a>
+        <a href="budget.html">Budget</a>
+        <a href="goals.html">Goals</a>
+        <a href="analytics.html">Analytics</a>
+        <a href="reports.html">Reports</a>
+      </nav>
+      <div class="sidebar-foot">
+        <strong id="userName">Account</strong>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="margin-top:8px;color:#fff;border-color:rgba(255,255,255,.2)">Log out</button>
+      </div>
+    </aside>
+    <main class="app-main">
+      <div class="page-head">
+        <div>
+          <p class="muted">Overview</p>
+          <h1>Dashboard</h1>
+        </div>
+        <a class="btn btn-primary" href="transactions.html">Add transaction</a>
+      </div>
+      <section class="stat-grid">
+        <article class="stat-card"><div class="label">Income this month</div><div class="value" id="statIncome">—</div></article>
+        <article class="stat-card"><div class="label">Expenses this month</div><div class="value" id="statExpense">—</div></article>
+        <article class="stat-card"><div class="label">Net balance</div><div class="value" id="statBalance">—</div></article>
+        <article class="stat-card"><div class="label">Savings rate</div><div class="value" id="statSave">—</div></article>
+      </section>
+      <section class="grid-2">
+        <div class="panel">
+          <h2>Recent transactions</h2>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>Date</th><th>Note</th><th>Category</th><th>Amount</th></tr></thead>
+              <tbody id="recentTx"></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <h2>Budgets</h2>
+            <div id="budgetPreview"></div>
+          </div>
+          <div class="panel">
+            <h2>Goals</h2>
+            <div id="goalPreview"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

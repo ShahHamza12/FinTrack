@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports · Fintrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,560&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle">Menu</button>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="dashboard.html"><span class="brand-mark">F</span> Fintrack</a>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="transactions.html">Transactions</a>
+        <a href="budget.html">Budget</a>
+        <a href="goals.html">Goals</a>
+        <a href="analytics.html">Analytics</a>
+        <a href="reports.html">Reports</a>
+      </nav>
+      <div class="sidebar-foot">
+        <strong id="userName">Account</strong>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="margin-top:8px;color:#fff;border-color:rgba(255,255,255,.2)">Log out</button>
+      </div>
+    </aside>
+    <main class="app-main">
+      <div class="page-head">
+        <div>
+          <p class="muted">Export</p>
+          <h1>Monthly report</h1>
+        </div>
+        <div class="toolbar" style="margin:0">
+          <input type="month" id="reportMonth" />
+          <button class="btn btn-ghost" id="printBtn" type="button">Print</button>
+          <button class="btn btn-primary" id="csvBtn" type="button">Download CSV</button>
+        </div>
+      </div>
+      <section class="stat-grid">
+        <article class="stat-card"><div class="label">Income</div><div class="value" id="rIncome">—</div></article>
+        <article class="stat-card"><div class="label">Expenses</div><div class="value" id="rExpense">—</div></article>
+        <article class="stat-card"><div class="label">Net</div><div class="value" id="rNet">—</div></article>
+        <article class="stat-card"><div class="label">Transactions</div><div class="value" id="rCount">—</div></article>
+      </section>
+      <div class="panel">
+        <h2 id="reportTitle">Transactions</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Date</th><th>Note</th><th>Category</th><th>Type</th><th>Amount</th></tr></thead>
+            <tbody id="reportTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    initAppShell("reports.html");
+    const API = window.FintrackAPI;
+    const monthInput = document.getElementById("reportMonth");
+    monthInput.value = API.monthKey();
+    let latest = null;
+
+    function render() {
+      Promise.resolve(API.report(monthInput.value)).then(function (data) {
+        latest = data;
+        document.getElementById("rIncome").textContent = API.money(data.income);
+        document.getElementById("rExpense").textContent = API.money(data.expense);
+        document.getElementById("rNet").textContent = API.money(data.net);
+        document.getElementById("rCount").textContent = data.transactions.length;
+        document.getElementById("reportTitle").textContent = "Transactions · " + data.month;
+        document.getElementById("reportTable").innerHTML = data.transactions.map(function (t) {
+          return "<tr><td>" + t.date + "</td><td>" + (t.note || "—") + "</td><td>" + t.category +
+            "</td><td>" + t.type + "</td><td>" + API.money(t.amount) + "</td></tr>";
+        }).join("") || "<tr><td colspan='5' class='empty'>No rows for this month.</td></tr>";
+      });
+    }
+
+    monthInput.addEventListener("change", render);
+    document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
+    document.getElementById("csvBtn").addEventListener("click", function () {
+      if (!latest) return;
+      const lines = ["date,note,category,type,amount"].concat(latest.transactions.map(function (t) {
+        return [t.date, '"' + (t.note || "").replace(/"/g, '""') + '"', t.category, t.type, t.amount].join(",");
+      }));
+      const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "fintrack-" + latest.month + ".csv";
+      a.click();
+    });
+    render();
+  </script>
+</body>
+</html>
